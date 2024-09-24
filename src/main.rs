@@ -1,5 +1,5 @@
 use std::env;
-use versionControl::{cat_file::pretty_print, init::init};
+use versionControl::{cat_file::pretty_print, hash_object::hash_object, init::init};
 fn main() {
     let args: Vec<String> = env::args().collect();
     match args[1].as_str() {
@@ -9,7 +9,10 @@ fn main() {
                 let hash = args[3].clone();
                 pretty_print(hash);
             }
+        },
+        "hash-object"=>{
+            hash_object(&args[2..]);
         }
-        _ => println!("unkown command:{}", args[1]),
+        _ => println!("unknown command:{}", args[1]),
     }
 }

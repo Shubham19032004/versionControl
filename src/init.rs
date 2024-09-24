@@ -1,9 +1,9 @@
 use std::fs;
 
-pub fn init(){
-    if fs::metadata(".vc").is_ok(){
+pub fn init() {
+    if fs::metadata(".vc").is_ok() {
         println!("vc already exist");
-        return 
+        return;
     }
     fs::create_dir(".vc").unwrap();
     fs::create_dir(".vc/objects").unwrap();
