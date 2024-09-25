@@ -4,7 +4,7 @@ use std::{fs, io::Read};
 pub fn pretty_print(hash: String) {
     let folder_name = &hash[0..2];
     let file_name = &hash[2..];
-    let path = format!(".git/objects/{folder_name}/{file_name}");
+    let path = format!(".vc/objects/{folder_name}/{file_name}");
 
     let mut object = fs::File::open(&path).unwrap();
     let mut content: Vec<u8> = vec![];
