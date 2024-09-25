@@ -5,3 +5,5 @@ edition = "2021"
 
 [dependencies]
 flate2 = { version = "1.0.17", features = ["zlib"], default-features = false }
+hex = "0.4.3"
+sha1 = "0.10.6"
