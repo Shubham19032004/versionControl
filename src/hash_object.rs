@@ -22,7 +22,6 @@ pub fn hash_object(args:&[String]){
             print_sha(&sha);
             save_file(&compressed_file, &folder_path,get_file_sha(&sha));
             dbg!(sha);
-            let file=std::fs::read(filename).unwrap();
 
         },
         _=>eprint!("Unknown option")
