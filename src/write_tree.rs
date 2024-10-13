@@ -2,8 +2,11 @@ use crate::hash::Hash;
 use crate::{hash_object::hash_object, utils::save_to_disk};
 use anyhow::{Context, Result};
 use ignore::WalkBuilder;
-use std::os::unix::prelude::PermissionsExt;
 use std::{fmt::Display, path::PathBuf};
+
+// Unix-specific permissions handling
+#[cfg(unix)]
+use std::os::unix::prelude::PermissionsExt;
 
 pub fn write_tree() -> Result<String> {
     // files and folders in the current directory
@@ -12,7 +15,6 @@ pub fn write_tree() -> Result<String> {
 
     Ok(hex::encode(checksum))
 }
-
 fn write_tree_object(path: &PathBuf) -> Result<Option<Hash>> {
     let mut objects = vec![];
     for object in WalkBuilder::new(&path)
@@ -32,11 +34,19 @@ fn write_tree_object(path: &PathBuf) -> Result<Option<Hash>> {
             .context("Could not get file name from object")?
             .to_owned();
 
+        // Handle Unix-specific permissions
+        #[cfg(unix)]
         let mode = metadata.permissions().mode();
-        let file_object = if metadata.is_file() {
-            // this is working correctly
-            let checksum = hash_object(true, file_path.to_path_buf())?;
 
+        // Provide an alternative on non-Unix platforms
+        #[cfg(not(unix))]
+        let mode = {
+            // Default mode or alternative handling
+            0o644 // Example default mode
+        };
+
+        let file_object = if metadata.is_file() {
+            let checksum = hash_object(true, file_path.to_path_buf())?;
             Some(TreeObject::new(true, checksum, name, mode))
         } else {
             if name == ".vc" {
@@ -64,6 +74,7 @@ fn write_tree_object(path: &PathBuf) -> Result<Option<Hash>> {
         Ok(Some(hash))
     }
 }
+
 
 #[derive(Debug)]
 struct TreeObject {

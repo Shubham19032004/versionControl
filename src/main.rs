@@ -1,4 +1,4 @@
-use git_starter_rust::{
+use versionControl::{
     cat_file::cat_file, clone::clone, commit_tree::commit_tree, hash_object::hash_object,
     init::init, ls_tree::ls_tree, write_tree::write_tree,
 };
