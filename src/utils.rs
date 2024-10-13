@@ -35,6 +35,61 @@ pub fn next_chunk(bytes: &[u8], offset_nulls: usize) -> Option<&[u8]> {
     result.nth(offset_nulls)
 }
 
+pub fn compress(content: &[u8]) -> Result<Vec<u8>> {
+    let mut encoded = Vec::new();
+    let mut encoder = ZlibEncoder::new(&mut encoded, Compression::default());
+
+    encoder
+        .write_all(content)
+        .context("error write all compress")?;
+
+    Ok(encoder.finish()?.to_owned())
+}
+
+pub fn get_hash(content: &[u8]) -> Result<Hash> {
+    let mut hasher = Sha1::new();
+
+    hasher.update(content);
+
+    Ok(Hash::new(hasher.finalize().into()))
+}
+
+pub fn save_to_disk(content: &[u8], mut path: PathBuf) -> Result<Hash> {
+    let hash = get_hash(content)?;
+    let compressed = compress(content)?;
+    let hash_utf8 = hex::encode(&hash);
+    let directory_name = get_object_directory_name(&hash_utf8);
+    let file_name = get_object_file_name(&hash_utf8);
+
+    path = path.join(".vc").join("objects").join(directory_name);
+
+    let Ok(directory_exists) = path.try_exists() else {
+        bail!("Error checking if directory exists");
+    };
+
+    if !directory_exists {
+        std::fs::DirBuilder::new().create(&path)?;
+    }
+
+    path = path.join(&file_name);
+
+    if path.exists() {
+        return Ok(hash);
+    }
+
+    std::fs::write(path, &compressed)?;
+
+    Ok(hash)
+}
+
+pub fn create_directory(path: &PathBuf) -> Result<()> {
+    if !path.exists() {
+        std::fs::DirBuilder::new().create(path)?;
+    }
+
+    Ok(())
+}
+
 pub fn remove_header(bytes: &[u8]) -> Result<&[u8]> {
     let index = bytes
         .iter()

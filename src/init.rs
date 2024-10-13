@@ -1,13 +1,19 @@
-use std::fs;
+use std::{fs, path::PathBuf};
 
-pub fn init() {
-    if fs::metadata(".vc").is_ok() {
-        println!("vc already exist");
-        return;
-    }
-    fs::create_dir(".vc").unwrap();
-    fs::create_dir(".vc/objects").unwrap();
-    fs::create_dir(".vc/refs").unwrap();
-    fs::write(".vc/HEAD", "ref:/heads/master\n").unwrap();
-    println!("Initialized the vc directory");
+pub fn init(mut path: PathBuf) {
+    path.push(".vc");
+    fs::create_dir_all(&path).expect("error creating .git directory");
+
+    let mut objects = path.clone();
+    objects.push("objects");
+    fs::create_dir(&objects).expect("error creating objects directory");
+
+    let mut refs = path.clone();
+    refs.push("refs");
+    fs::create_dir(&refs).expect("error creating refs directory");
+
+    let mut head = path.clone();
+    head.push("HEAD");
+    fs::write(&head, "ref: refs/heads/master\n").expect("error writing head info to refs");
+    println!("Initialized git directory");
 }

@@ -12,7 +12,7 @@ pub fn ls_tree(args: &[String]) {
     let hash = &args[1];
     let directory_name = get_object_directory_name(hash);
     let file_name = get_object_file_name(hash);
-    let path = Path::new(".git")
+    let path = Path::new(".vc")
         .join("objects")
         .join(directory_name)
         .join(file_name);
