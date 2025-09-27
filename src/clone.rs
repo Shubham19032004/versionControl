@@ -9,7 +9,6 @@ use std::io::Read;
 use std::io::Seek;
 use std::path::Path;
 use std::path::PathBuf;
-
 use crate::hash::Hash;
 use crate::process_packfile::{apply_delta_instruction, ObjectType};
 use crate::process_packfile::{read_size_encoding, read_type_and_size};
