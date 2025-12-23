@@ -15,7 +15,6 @@ use crate::process_packfile::{read_size_encoding, read_type_and_size};
 use crate::utils::create_directory;
 use crate::utils::{get_hash, save_to_disk};
 use crate::{checkout, init};
-
 pub type GitObjects = HashMap<Hash, Vec<u8>>;
 
 pub async fn clone(uri: &str, target_dir: &str) -> Result<()> {
